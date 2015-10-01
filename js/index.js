@@ -19,8 +19,9 @@ $(function() {
 });
 
 function handle_bus(bus_number) {
-/*
-https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22==your-encode-url==%22&format=json&diagnostics=true&callback=
-*/
-	$.getJSON("");
+	var url = "schedule/" + bus_number + ".html";
+	url = encodeURIComponent(url);
+	$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22" + url + "%22&format=json&diagnostics=true&callback=", function(response) {
+		res = 
+	});
 }
