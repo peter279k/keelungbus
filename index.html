@@ -30,19 +30,13 @@
 		<nd2-include data-src="panel/leftPanel.html"></nd2-include>
 		<div data-role="header" data-position="fixed" class="wow fadeIn">
 			<a href="#leftpanel" class="ui-btn ui-btn-left wow fadeIn" data-wow-delay='0.8s'><i class="zmdi zmdi-menu"></i></a>
-			<h2>基隆市公車</h2>
-		</div>
-		<div data-role="content">
-			<!--Dynamic bus here-->
-		</div>
-	</div>
-	<div id="busTime" data-role="page">
-		<div data-role="header" data-position="fixed" class="wow fadeIn">
 			<h2>公車時刻查詢</h2>
 		</div>
-		<div data-role="content">
-			<!--collapsible listview-->
-			<ul id="bus-time-list" data-role="listview" data-inset="false"></ul>
+		<div id="bus-time-content" data-role="content">
+			<form>
+				<input data-type="search" id="filterBus-input" placeholder="請輸入公車名稱...">
+			</form>
+			<div id="borders" data-role="collapsible-set" data-filter="true" data-input="#filterBus-input"></div>
 		</div>
 	</div>
 </body>
