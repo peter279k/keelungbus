@@ -1,3 +1,4 @@
+var inter_val = "";
 $(function() {
 	var res = "";
 	show_bus_list();
@@ -5,6 +6,7 @@ $(function() {
 	$("#dynamic-list").html("");
 	$("#show-bus-list").click(function(event) {
 		event.preventDefault();
+		clearInterval(inter_val);
 		show_bus_list();
 	});
 });
@@ -51,22 +53,53 @@ function get_dynamic_info(link) {
 	$("#filterBtn").hide();
 	$("#filterStop").show();
 	$(".row").html("");
-	$("#dynamic-list").html("");
-	$("#dynamic-list").append('<li data-role="list-divider">即時公車動態</li>');
-	$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(link) + "%22%20and%20xpath%20%3D%20%22%2F%2Fa%22&format=json&diagnostics=true&callback=", function(response) {
-		res = response["query"]["results"]["a"];
-		for(var res_count=2;res_count<res.length;res_count++) {
-			if(res_count % 2 == 1)
-				continue;
-			$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(res[res_count]["href"]) + "%22%20and%20xpath%20%3D%20%22%2F%2Ftd%22&format=json&diagnostics=true&callback=", function(response) {
-				var temp = '<li class="ui-li-static ui-body-inherit">';
-				res = response["query"]["results"]["td"];
-				temp += "<h2>" + res[1].trim().replace(/\r/g, "").replace(/\n/g, "") + "</h2>";
-				temp += "<h3 class='clr-deep-orange'>" + res[2]["content"] + "</h3>";
-				temp += "</li>";
-				$("#dynamic-list").append(temp);
-			});
-		}
-		$("#dynamic-list").listview("refresh");
+	//toast
+	new $.nd2Toast( {
+		// The 'new' keyword is important, otherwise you would overwrite the current toast instance
+		message : "載入資料中...", // Required
+		action : { // Optional (Defines the action button on the right)
+			title : "", // Title of the action button
+			link : "", // optional (either link or fn or both must be set to define an action)
+			fn : function() { // function that will be triggered when action clicked
+				console.log("Action Button clicked'");
+			},
+			color : "lime" // optional color of the button (default: 'lime')
+		},
+		ttl : 8000 // optional, time-to-live in ms (default: 3000)
 	});
+
+	inter_val = setInterval(function() {
+		//toast
+		new $.nd2Toast( {
+			// The 'new' keyword is important, otherwise you would overwrite the current toast instance
+			message : "載入資料中...", // Required
+			action : { // Optional (Defines the action button on the right)
+				title : "", // Title of the action button
+				link : "", // optional (either link or fn or both must be set to define an action)
+				fn : function() { // function that will be triggered when action clicked
+					console.log("Action Button clicked'");
+				},
+				color : "lime" // optional color of the button (default: 'lime')
+			},
+			ttl : 5000 // optional, time-to-live in ms (default: 3000)
+		});
+		$("#dynamic-list").html("");
+		$("#dynamic-list").append('<li data-role="list-divider">即時公車動態</li>');
+		$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(link) + "%22%20and%20xpath%20%3D%20%22%2F%2Fa%22&format=json&diagnostics=true&callback=", function(response) {
+			res = response["query"]["results"]["a"];
+			for(var res_count=2;res_count<res.length;res_count++) {
+				if(res_count % 2 == 1)
+					continue;
+				$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(res[res_count]["href"]) + "%22%20and%20xpath%20%3D%20%22%2F%2Ftd%22&format=json&diagnostics=true&callback=", function(response) {
+					var temp = '<li class="ui-li-static ui-body-inherit">';
+					res = response["query"]["results"]["td"];
+					temp += "<h2>" + res[1].trim().replace(/\r/g, "").replace(/\n/g, "") + "</h2>";
+					temp += "<h3 class='clr-deep-orange'>" + res[2]["content"] + "</h3>";
+					temp += "</li>";
+					$("#dynamic-list").append(temp);
+				});
+			}
+			$("#dynamic-list").listview("refresh");
+		});
+	}, 30000);
 }
