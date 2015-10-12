@@ -18,6 +18,10 @@ function show_bus_list() {
 	var bus_arr = new Array();
 	$(".row").html("");
 	$("#dynamic-list").html("");
+	//use ajax async
+	$.ajaxSetup({
+		async: true
+	});
 	$.getJSON("../php/get_bus_list.php?action=get_estimate_routegroup", function(response) {
 		res = response["query"]["results"]["a"];
 		for(var res_count=2;res_count<res.length;res_count++) {
@@ -50,6 +54,10 @@ function show_bus_list() {
 
 function get_dynamic_info(link) {
 	//即時公車資料(real-time)
+	//use ajax sync
+	$.ajaxSetup({
+		async: false
+	});
 	$("#filterBtn").hide();
 	$("#filterStop").show();
 	$(".row").html("");
@@ -65,7 +73,7 @@ function get_dynamic_info(link) {
 			},
 			color : "lime" // optional color of the button (default: 'lime')
 		},
-		ttl : 8000 // optional, time-to-live in ms (default: 3000)
+		ttl : 20000 // optional, time-to-live in ms (default: 3000)
 	});
 
 	inter_val = setInterval(function() {
@@ -83,6 +91,7 @@ function get_dynamic_info(link) {
 			},
 			ttl : 5000 // optional, time-to-live in ms (default: 3000)
 		});
+		var href_arr = new Array();
 		$("#dynamic-list").html("");
 		$("#dynamic-list").append('<li data-role="list-divider">即時公車動態</li>');
 		$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(link) + "%22%20and%20xpath%20%3D%20%22%2F%2Fa%22&format=json&diagnostics=true&callback=", function(response) {
@@ -90,16 +99,21 @@ function get_dynamic_info(link) {
 			for(var res_count=2;res_count<res.length;res_count++) {
 				if(res_count % 2 == 1)
 					continue;
-				$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(res[res_count]["href"]) + "%22%20and%20xpath%20%3D%20%22%2F%2Ftd%22&format=json&diagnostics=true&callback=", function(response) {
-					var temp = '<li class="ui-li-static ui-body-inherit">';
-					res = response["query"]["results"]["td"];
-					temp += "<h2>" + res[1].trim().replace(/\r/g, "").replace(/\n/g, "") + "</h2>";
-					temp += "<h3 class='clr-deep-orange'>" + res[2]["content"] + "</h3>";
-					temp += "</li>";
-					$("#dynamic-list").append(temp);
-				});
+				href_arr.push(res[res_count]["href"]);
 			}
-			$("#dynamic-list").listview("refresh");
 		});
-	}, 30000);
+
+		for(var res_count=0;res_count<href_arr.length;res_count++) {
+			$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(href_arr[res_count]) + "%22%20and%20xpath%20%3D%20%22%2F%2Ftd%22&format=json&diagnostics=true&callback=", function(response) {
+				var temp = '<li class="ui-li-static ui-body-inherit">';
+				res = response["query"]["results"]["td"];
+				temp += "<h2>" + res[1].trim().replace(/\r/g, "").replace(/\n/g, "") + "</h2>";
+				temp += "<h3 class='clr-deep-orange'>" + res[2]["content"] + "</h3>";
+				temp += "</li>";
+				$("#dynamic-list").append(temp);
+			});
+		}
+		
+		$("#dynamic-list").listview("refresh");
+	}, 20000);
 }
