@@ -93,6 +93,9 @@ function get_dynamic_info(link) {
 
 function dynamic_info(href_arr) {
 	//toast
+	$.ajaxSetup({
+		async: true
+	});
 	$("#dynamic-list").html('<li data-role="list-divider">即時公車動態</li>');
 		new $.nd2Toast( {
 			// The 'new' keyword is important, otherwise you would overwrite the current toast instance
@@ -107,7 +110,10 @@ function dynamic_info(href_arr) {
 			},
 			ttl : 3000 // optional, time-to-live in ms (default: 3000)
 		});
-
+	
+		var temp_count_arr = new Array();
+		var temp_str_arr = new Array();
+		var temp_str = "";
 		for(var res_count=0;res_count<href_arr.length;res_count++) {
 			$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(href_arr[res_count]) + "%22%20and%20xpath%20%3D%20%22%2F%2Ftd%22&format=json&diagnostics=true&callback=", function(response) {
 				var temp = '<li class="ui-li-static ui-body-inherit">';
@@ -115,9 +121,29 @@ function dynamic_info(href_arr) {
 				temp += "<h2>" + res[1].trim().replace(/\r/g, "").replace(/\n/g, "") + "</h2>";
 				temp += "<h3 class='clr-deep-orange'>" + res[2]["content"] + "</h3>";
 				temp += "</li>";
-				$("#dynamic-list").append(temp);
+				temp_count_arr.push(res_count);
+				temp_str_arr.push(temp);
+				if(href_arr.length === temp_count_arr.length) {
+					sort_str(temp_count_arr, temp_str_arr);
+				}
 			});
 		}
-		
+}
+
+function sort_str(temp_count_arr, temp_str_arr) {
+	for(var res_count=0;res_count<temp_count_arr.length;res_count++) {
+		if(res_count !== temp_count_arr.length-1) {
+			if(temp_count_arr[res_count] > temp_count_arr[res_count + 1]) {
+				var temp = temp_count_arr[res_count];
+				temp_count_arr[res_count] = temp_count_arr[res_count + 1];
+				temp_count_arr[res_count + 1] = temp;
+				temp = temp_str_arr[res_count];
+				temp_str_arr[res_count] = temp_str_arr[res_count + 1];
+				temp_str_arr[res_count + 1] = temp;
+			}
+		}
+	}
+
+	$("#dynamic-list").append(temp_str_arr.toString().replace(/,/g , ""));
 	$("#dynamic-list").listview("refresh");
 }
