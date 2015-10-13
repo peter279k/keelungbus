@@ -28,6 +28,19 @@
 		echo $files;
 		
 	}
+	else if((int)$action >= 101101)
+	{
+		$file_name = "../json/" . $action . ".json";
+		if(!file_exists($file_name))
+		{
+			$files = http_get("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" . urlencode("estimate_stop.jsp?rid=" . $action) . "%22%20and%20xpath%20%3D%20%22%2F%2Fa%22&format=json&diagnostics=true&callback=", $ref = "");
+			$files = $files["FILE"];
+			file_put_contents($file_name, $files);
+		}
+		else
+			$files = file_get_contents($file_name);
+		echo $files;
+	}
 	else if(stristr($action, "estimate_route"))
 	{
 		$action_arr = explode("?", $action);
