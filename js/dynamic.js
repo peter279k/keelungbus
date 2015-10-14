@@ -132,14 +132,14 @@ function dynamic_info(href_arr) {
 
 function sort_str(temp_count_arr, temp_str_arr) {
 	for(var res_count=0;res_count<temp_count_arr.length;res_count++) {
-		if(res_count !== temp_count_arr.length-1) {
-			if(temp_count_arr[res_count] > temp_count_arr[res_count + 1]) {
+		for(var res_count2=res_count+1;res_count2<temp_count_arr.length;res_count2++) {
+			if(temp_count_arr[res_count] > temp_count_arr[res_count2]) {
 				var temp = temp_count_arr[res_count];
-				temp_count_arr[res_count] = temp_count_arr[res_count + 1];
-				temp_count_arr[res_count + 1] = temp;
+				temp_count_arr[res_count] = temp_count_arr[res_count2];
+				temp_count_arr[res_count2] = temp;
 				temp = temp_str_arr[res_count];
-				temp_str_arr[res_count] = temp_str_arr[res_count + 1];
-				temp_str_arr[res_count + 1] = temp;
+				temp_str_arr[res_count] = temp_str_arr[res_count2];
+				temp_str_arr[res_count2] = temp;
 			}
 		}
 	}
