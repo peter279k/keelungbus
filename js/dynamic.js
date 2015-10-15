@@ -94,17 +94,17 @@ function get_dynamic_info(link, link_content) {
 		}
 		$("#dynamic-list").listview("refresh");
 	});
-
-	inter_val = setInterval(dynamic_info(href_arr), 8000);
+	
+	dynamic_info(href_arr);
 }
 
 function dynamic_info(href_arr) {
-	console.log(href_arr);
 	//toast
 	$.ajaxSetup({
 		async: true
 	});
-	$("h3").remove(".clr-deep-orange");
+	setInterval(function() {
+		$("h3").remove(".clr-deep-orange");
 		new $.nd2Toast( {
 			// The 'new' keyword is important, otherwise you would overwrite the current toast instance
 			message : "載入資料中...", // Required
@@ -120,21 +120,23 @@ function dynamic_info(href_arr) {
 		});
 
 		for(var res_count=0;res_count<href_arr.length;res_count++) {
-			$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(href_arr[res_count]) + "%22%20and%20xpath%20%3D%20%22%2F%2Ftd%22&format=json&diagnostics=true&callback=", 
+			$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2Festimate_result.jsp%3Frid%3D103101%26sid%3D112%22%20and%20xpath%20%3D%20%22%2F%2Ftd%22&format=json&diagnostics=true&callback=", 
 				(function(dy_info) {
 					return function(response) {
-						handle_dy_info(response, dy_info);
-						$("#dynamic-list").listview("refresh");
-						// create a new closure on the parameter dy_info
-						// which will hold the correct value at invocation time
+						if(response == null) {
+								alert("即時服務暫時無法使用");
+						}
+						else {
+							res = response["query"]["results"]["td"];
+							var temp = "<h3 class='clr-deep-orange'>--" + res[2]["content"] + "</h3>";
+							$("#" + dy_info.replace(".", "").replace("&", "").replace("?", "").replace(/=/g, "")).append(temp);
+							$("#dynamic-list").listview("refresh");
+							// create a new closure on the parameter dy_info
+							// which will hold the correct value at invocation time
+						}
 					};
 				}(href_arr[res_count])) // calling the function with the current value
 			);
 		}
-}
-
-function handle_dy_info(response, dy_info) {
-	res = response["query"]["results"]["td"];
-	var temp = "<h3 class='clr-deep-orange'>--" + res[2]["content"] + "</h3>";
-	$("#" + dy_info.replace(".", "").replace("&", "").replace("?", "").replace(/=/g, "")).append(temp);
+	}, 80000);
 }
