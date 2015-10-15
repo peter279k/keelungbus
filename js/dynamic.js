@@ -138,5 +138,5 @@ function dynamic_info(href_arr) {
 				}(href_arr[res_count])) // calling the function with the current value
 			);
 		}
-	}, 80000);
+	}, 30000);
 }
