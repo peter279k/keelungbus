@@ -3,7 +3,7 @@ var href_arr = new Array();
 $(function() {
 	var res = "";
 	show_bus_list();
-	$(".row").html("");
+	$("#filter-row").html("");
 	$("#dynamic-list").html("");
 	$("#show-bus-list").click(function(event) {
 		event.preventDefault();
@@ -18,7 +18,7 @@ function show_bus_list() {
 	$("#filterStop").hide();
 	var res = "";
 	var bus_arr = new Array();
-	$(".row").html("");
+	$("#filter-row").html("");
 	$("#dynamic-list").html("");
 	//use ajax async
 	$.ajaxSetup({
@@ -40,13 +40,13 @@ function show_bus_list() {
 					count += 1;
 					if(count % 6 == 0) {
 						temp += "</div></div>";
-						$(".row").append(temp);
+						$("#filter-row").append(temp);
 						temp = '<div class="col-xs-12 col-sm-6 col-md-4"><div class="box">';
 						count = 0;
 					}
 					if(res_count == res.length-1 && count % 6 !== 0) {
 						temp += "</div></div>";
-						$(".row").append(temp);
+						$("#filter-row").append(temp);
 					}
 				}
 			});
@@ -62,7 +62,7 @@ function get_dynamic_info(link, link_content) {
 	});
 	$("#filterBtn").hide();
 	$("#filterStop").show();
-	$(".row").html("");
+	$("#filter-row").html("");
 	//toast
 	new $.nd2Toast( {
 		// The 'new' keyword is important, otherwise you would overwrite the current toast instance
@@ -120,7 +120,7 @@ function dynamic_info(href_arr) {
 		});
 
 		for(var res_count=0;res_count<href_arr.length;res_count++) {
-			$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2Festimate_result.jsp%3Frid%3D103101%26sid%3D112%22%20and%20xpath%20%3D%20%22%2F%2Ftd%22&format=json&diagnostics=true&callback=", 
+			$.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20%22http%3A%2F%2F117.56.232.115%2FKLBusWeb%2Fpda%2F" + encodeURIComponent(href_arr[res_count]) + "%22%20and%20xpath%20%3D%20%22%2F%2Ftd%22&format=json&diagnostics=true", 
 				(function(dy_info) {
 					return function(response) {
 						if(response == null) {
