@@ -62,6 +62,7 @@ function show_bus_list() {
 function get_dynamic_info(link, link_content) {
 	//即時公車資料(real-time)
 	//use ajax sync
+	$("#go-top").show();
 	$.ajaxSetup({
 		async: false
 	});
