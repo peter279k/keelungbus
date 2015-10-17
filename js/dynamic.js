@@ -7,10 +7,15 @@ $(function() {
 	$("#dynamic-list").html("");
 	$("#show-bus-list").click(function(event) {
 		event.preventDefault();
+		$("#go-top").hide();
 		clearInterval(inter_val);
 		show_bus_list();
 	});
-	
+	$("#go-top").click(function(event) {
+		event.preventDefault();
+		$.mobile.silentScroll(0);
+	});
+	$("#go-top").hide();
 });
 
 function show_bus_list() {
